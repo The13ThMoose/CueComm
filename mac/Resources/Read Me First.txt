@@ -1,0 +1,30 @@
+CueComm - install
+
+1. Drag CueComm into the Applications folder.
+2. Open it from Applications.
+
+If macOS says CueComm "cannot be opened" or "cannot be verified":
+the app is not notarized by Apple, so it needs to be allowed once.
+
+  Option A:  Right-click (or Control-click) CueComm in Applications, choose Open,
+             then click Open in the dialog.
+
+  Option B:  Open System Settings > Privacy & Security, scroll down, and click
+             "Open Anyway" next to CueComm.
+
+  Option C:  In Terminal, run:
+             xattr -dr com.apple.quarantine /Applications/CueComm.app
+
+On first launch macOS asks for permission to use the Microphone, Speech Recognition
+and the Local Network. Allow all three: they are needed for transcription and
+for sharing sessions between Macs.
+
+Macs on different networks or subnets (including over the internet):
+Bonjour only works inside one subnet. On the Mac that hosts the session, open Session
+and copy the address under "Others can join this session at". On the other Mac, open
+Session, paste it under "Join by IP address" and press Join. That Mac joins the
+session straight away, you do not need to type the session name. Over the internet,
+forward TCP port 47800 on the router of the Mac being called, or put both Macs on a
+VPN such as Tailscale and use its address. Connections are not encrypted.
+
+Requires macOS 14 or newer (macOS 15 or newer for translation).

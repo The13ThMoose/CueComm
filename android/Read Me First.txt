@@ -1,0 +1,12 @@
+CueComm for Android
+
+1. Copy CueComm.apk to the phone and open it. Android asks you to allow installs from that app: allow it.
+2. Open CueComm. Allow the Microphone and Notifications.
+3. To join a session: tap the menu (three lines, top left), tap the session box, then either
+   - tap a session found on your network, or
+   - type the IP address of any device that is hosting (for example 203.0.113.5:47800) under "Join by IP
+     address" and press Join. You do not need to type the session name.
+4. Press Listen to speak into a channel. Say a cue word to send OSC and flash every device in the session.
+
+Works with CueComm for Mac in the same session. Over the internet, forward TCP port 47800 on the hosting
+network's router, or put the devices on a VPN such as Tailscale. Connections are not encrypted.
