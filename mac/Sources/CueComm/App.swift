@@ -4,6 +4,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
+        if SpeechTest.requested { SpeechTest.run { NSApp.terminate(nil) } }
     }
     // Keep running (and keep listening) after the window is closed, like a show-control tool should.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
@@ -13,6 +14,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct CueCommApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @StateObject private var store = AppStore()
+
+    init() {
+        // The measurement harness must never read or write the user's real setup, history or network session.
+        if SpeechTest.requested {
+            let dir = NSTemporaryDirectory() + "cuecomm-speechtest-" + UUID().uuidString
+            try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            setenv("CUECOMM_SUPPORT_DIR", dir, 1)
+        }
+    }
 
     var body: some Scene {
         WindowGroup {

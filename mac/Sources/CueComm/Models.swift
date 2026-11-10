@@ -51,6 +51,9 @@ struct Channel: Identifiable, Codable, Hashable {
     var shared = false              // share on the LAN (open sharing, no session)
     var isPrivate = false           // in a session: keep this channel on this Mac only
     var onDeviceOnly = true
+    var inputGainDB = 0.0           // manual trim before the recogniser, for a quiet console or Dante send
+    var autoLevel = true            // even out the level so a quiet or loud feed reaches the recogniser at a good level
+    var speechGate = true           // pass speech (with a short lead-in) and drop the noise between it
     var isRemote = false            // owned by another machine
     var ownerName: String?
 
@@ -74,6 +77,7 @@ extension Channel {
         localeID = c.get("localeID", localeID); keywords = c.get("keywords", keywords)
         translate = c.get("translate", translate); enabled = c.get("enabled", enabled)
         shared = c.get("shared", shared); isPrivate = c.get("isPrivate", isPrivate); onDeviceOnly = c.get("onDeviceOnly", onDeviceOnly)
+        inputGainDB = c.get("inputGainDB", inputGainDB); autoLevel = c.get("autoLevel", autoLevel); speechGate = c.get("speechGate", speechGate)
         isRemote = c.get("isRemote", isRemote); ownerName = c.get("ownerName", ownerName)
     }
 }

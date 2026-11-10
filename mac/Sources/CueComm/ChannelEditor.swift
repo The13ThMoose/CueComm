@@ -135,11 +135,52 @@ struct ChannelEditorView: View {
                 }
                 .frame(maxHeight: 250)
                 if let err = monitor.error { Text(err).font(.system(size: 13)).foregroundStyle(Theme.danger) }
+                if ch.inputChannel >= device.inputChannels {
+                    Text("Input \(ch.inputChannel + 1) is not on this soundcard. Pick one of its inputs above.")
+                        .font(.system(size: 14, weight: .semibold)).foregroundStyle(Theme.danger)
+                }
+                levelBlock
             } else {
                 Text("No input device found.").font(.system(size: 15)).foregroundStyle(Theme.danger)
             }
             Toggle("Capture this channel when listening", isOn: $ch.enabled).toggleStyle(.switch).tint(Theme.orange)
         }
+    }
+
+    /// Level of the selected input in numbers, with a plain verdict, and the controls that act on it.
+    private var levelBlock: some View {
+        let peak = monitor.peaksDB[safe: ch.inputChannel]
+        let verdict = peak.map(Self.verdict) ?? (text: "Waiting for the input…", color: Theme.faint)
+        return VStack(alignment: .leading, spacing: 10) {
+            Rectangle().fill(Theme.hairline).frame(height: 1)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Level on input \(ch.inputChannel + 1)").font(.system(size: 13, weight: .semibold)).foregroundStyle(Theme.dim)
+                Spacer()
+                if let peak, peak > -119 { Text("peak \(Int(peak.rounded())) dBFS").font(.system(size: 14, weight: .bold).monospacedDigit()) }
+            }
+            Text(verdict.text).font(.system(size: 14)).foregroundStyle(verdict.color)
+            Toggle("Even out the level", isOn: $ch.autoLevel).toggleStyle(.switch).tint(Theme.orange)
+            Text("Raises a quiet send and tames a loud one, so the recogniser always hears speech at a good level.")
+                .font(.system(size: 13)).foregroundStyle(Theme.faint)
+            Toggle("Ignore noise between speech", isOn: $ch.speechGate).toggleStyle(.switch).tint(Theme.orange)
+            Text("Only passes the audio to the recogniser while someone speaks. Turn it off for a very quiet or very noisy input that gets cut off.")
+                .font(.system(size: 13)).foregroundStyle(Theme.faint)
+            HStack(spacing: 12) {
+                Text(ch.autoLevel ? "Extra gain" : "Gain").font(.system(size: 14, weight: .semibold))
+                Slider(value: $ch.inputGainDB, in: -12...36, step: 1).tint(Theme.orange)
+                Text("\(ch.inputGainDB >= 0 ? "+" : "")\(Int(ch.inputGainDB)) dB")
+                    .font(.system(size: 14, weight: .bold).monospacedDigit()).frame(width: 58, alignment: .trailing)
+            }
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    private static func verdict(_ peak: Float) -> (text: String, color: Color) {
+        if peak < -85 { return ("No signal. Check the routing, or that this input is subscribed to a sender.", Theme.danger) }
+        if peak < -50 { return ("Very quiet. Speech recognition will struggle; send more level, or use Even out the level.", Theme.cue) }
+        if peak < -30 { return ("Quiet but usable. Even out the level will bring it up.", Theme.dim) }
+        if peak > -0.5 { return ("Clipping. Lower the send level at the source.", Theme.danger) }
+        return ("Good level.", Theme.live)
     }
 
     private var languageCard: some View {

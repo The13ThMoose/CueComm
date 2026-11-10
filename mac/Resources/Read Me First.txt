@@ -27,4 +27,12 @@ session straight away, you do not need to type the session name. Over the intern
 forward TCP port 47800 on the router of the Mac being called, or put both Macs on a
 VPN such as Tailscale and use its address. Connections are not encrypted.
 
+Soundcards and Dante Virtual Soundcard:
+Choose the soundcard by name in each channel's settings instead of "System default": the
+default can switch to a one-input microphone and the channel would then lose its input.
+The channel's settings show the peak level of the selected input in dBFS. "Even out the
+level" and "Ignore noise between speech" prepare the audio for the recogniser; use the gain
+slider on a very quiet send. If the channel's status line reports dropouts, raise the
+latency in the Dante Virtual Soundcard window.
+
 Requires macOS 14 or newer (macOS 15 or newer for translation).
